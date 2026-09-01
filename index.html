@@ -1,12 +1,76 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
   <title>我的冰箱</title>
+
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <h1>🧊 我的冰箱</h1>
-  <button>+ 添加食材</button>
+
+  <main class="app">
+
+    <header class="top-bar">
+      <div>
+        <h1>🧊 我的冰箱</h1>
+        <p class="subtitle">看看还有什么能吃</p>
+      </div>
+
+      <button class="add-button">
+        ＋ 添加食材
+      </button>
+    </header>
+
+
+    <section class="search-area">
+      <input
+        type="search"
+        placeholder="搜索食材…"
+        class="search-box"
+      >
+    </section>
+
+
+    <section class="filters">
+
+      <div class="filter-row">
+        <button class="filter active">全部</button>
+        <button class="filter">冷藏</button>
+        <button class="filter">冷冻</button>
+      </div>
+
+      <div class="filter-row">
+        <button class="filter">生</button>
+        <button class="filter">熟</button>
+        <button class="filter">已开封</button>
+        <button class="filter">半成品</button>
+      </div>
+
+    </section>
+
+
+    <section class="food-list">
+
+      <div class="empty-state">
+        <div class="empty-icon">🥬</div>
+
+        <h2>冰箱还是空的</h2>
+
+        <p>
+          点上面的“添加食材”开始记录
+        </p>
+      </div>
+
+    </section>
+
+  </main>
+
 </body>
 </html>
