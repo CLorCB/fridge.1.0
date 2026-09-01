@@ -21,6 +21,9 @@ if ("serviceWorker" in navigator) {
   });
 
 }
+const exportButton = document.querySelector("#exportButton");
+const importButton = document.querySelector("#importButton");
+const importFile = document.querySelector("#importFile");
 const openAddButton = document.querySelector("#openAddButton");
 const closeDialogButton = document.querySelector("#closeDialogButton");
 
@@ -819,3 +822,243 @@ function renderFoods() {
 */
 
 renderFoods();
+/*
+  导出备份
+*/
+
+exportButton.addEventListener("click", async () => {
+
+  const backup = {
+
+    /*
+      backupVersion（备份版本号）
+      以后数据结构改变时方便兼容旧备份
+    */
+
+    backupVersion: 1,
+
+    exportedAt: new Date().toISOString(),
+
+    foods: foods
+
+  };
+
+
+  const jsonText = JSON.stringify(
+    backup,
+    null,
+    2
+  );
+
+
+  const fileName =
+    `my-fridge-backup-${getToday()}.json`;
+
+
+  /*
+    File（文件对象）
+  */
+
+  const file = new File(
+    [jsonText],
+    fileName,
+    {
+      type: "application/json"
+    }
+  );
+
+
+  /*
+    iPhone 等支持 Web Share API（网页分享接口）的设备
+    优先打开系统分享菜单。
+
+    可以在那里选择：
+    “存储到文件”
+    iCloud Drive（苹果云盘）等。
+  */
+
+  if (
+    navigator.share &&
+    navigator.canShare &&
+    navigator.canShare({
+      files: [file]
+    })
+  ) {
+
+    try {
+
+      await navigator.share({
+        files: [file],
+        title: "我的冰箱备份"
+      });
+
+      return;
+
+    } catch (error) {
+
+      /*
+        如果只是用户自己取消分享，
+        什么都不用做
+      */
+
+      if (error.name === "AbortError") {
+        return;
+      }
+
+    }
+
+  }
+
+
+  /*
+    如果设备不支持分享文件，
+    就使用普通下载
+  */
+
+  const blob = new Blob(
+    [jsonText],
+    {
+      type: "application/json"
+    }
+  );
+
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = url;
+
+  link.download = fileName;
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  link.remove();
+
+
+  setTimeout(() => {
+
+    URL.revokeObjectURL(url);
+
+  }, 1000);
+
+});
+
+
+/*
+  点击“导入备份”
+*/
+
+importButton.addEventListener("click", () => {
+
+  /*
+    清空之前选择的文件
+    这样连续选择同一个备份也能触发
+  */
+
+  importFile.value = "";
+
+  importFile.click();
+
+});
+
+
+/*
+  用户选择备份文件以后
+*/
+
+importFile.addEventListener("change", async () => {
+
+  const file = importFile.files[0];
+
+
+  if (!file) {
+    return;
+  }
+
+
+  try {
+
+    const text = await file.text();
+
+    const backup = JSON.parse(text);
+
+
+    /*
+      正常的新备份格式：
+      {
+        backupVersion: 1,
+        foods: [...]
+      }
+
+      同时也允许直接导入旧的数组格式，
+      给以后修改留点余地。
+    */
+
+    let importedFoods;
+
+
+    if (Array.isArray(backup)) {
+
+      importedFoods = backup;
+
+    }
+
+    else if (
+      backup &&
+      Array.isArray(backup.foods)
+    ) {
+
+      importedFoods = backup.foods;
+
+    }
+
+    else {
+
+      throw new Error(
+        "无法识别这个备份文件"
+      );
+
+    }
+
+
+    const confirmed = confirm(
+
+      `这个备份里有 ${importedFoods.length} 条食材记录。\n\n` +
+      `导入后会覆盖你现在的 ${foods.length} 条记录。\n\n` +
+      `确定继续吗？`
+
+    );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    foods = importedFoods;
+
+    saveFoods();
+
+    renderFoods();
+
+
+    alert(
+      `恢复成功，共导入 ${foods.length} 条食材。`
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    alert(
+      "导入失败。请选择由“我的冰箱”导出的 JSON（数据文件格式）备份。"
+    );
+
+  }
+
+});
