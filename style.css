@@ -203,3 +203,181 @@ h1 {
   }
 
 }
+/* 食材卡片 */
+
+.food-card {
+  background: white;
+
+  border: 1px solid #e7e7e7;
+  border-radius: 18px;
+
+  padding: 16px;
+
+  margin-bottom: 12px;
+}
+
+.food-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.food-name {
+  margin: 0;
+
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.food-quantity {
+  color: #555;
+  white-space: nowrap;
+}
+
+.food-info {
+  margin-top: 8px;
+
+  color: #777;
+  font-size: 14px;
+}
+
+.food-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  margin-top: 10px;
+}
+
+.food-tag {
+  background: #f1f2f4;
+
+  border-radius: 999px;
+
+  padding: 5px 9px;
+
+  font-size: 12px;
+  color: #555;
+}
+
+.food-note {
+  margin-top: 10px;
+
+  color: #555;
+  font-size: 14px;
+}
+
+
+/* 添加食材弹窗 */
+
+.food-dialog {
+  width: min(92%, 500px);
+
+  border: none;
+  border-radius: 22px;
+
+  padding: 0;
+}
+
+.food-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.food-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  padding: 22px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog-header h2 {
+  margin: 0;
+}
+
+.close-button {
+  border: none;
+  background: transparent;
+
+  font-size: 28px;
+  line-height: 1;
+}
+
+.food-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.food-form input,
+.food-form select,
+.food-form textarea {
+  width: 100%;
+
+  border: 1px solid #ddd;
+  border-radius: 12px;
+
+  padding: 12px;
+
+  background: white;
+
+  font-size: 16px;
+}
+
+.food-form textarea {
+  resize: vertical;
+}
+
+.field-title {
+  margin-bottom: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tag-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tag-option {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+
+  gap: 6px !important;
+
+  padding: 9px 12px;
+
+  border: 1px solid #ddd;
+  border-radius: 999px;
+
+  font-weight: normal !important;
+}
+
+.tag-option input {
+  width: auto;
+}
+
+.save-button {
+  border: none;
+  border-radius: 14px;
+
+  padding: 14px;
+
+  background: #222;
+  color: white;
+
+  font-weight: 650;
+  font-size: 16px;
+}
