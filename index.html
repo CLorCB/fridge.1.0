@@ -43,21 +43,72 @@
 
     <section class="filters">
 
-      <div class="filter-row">
-        <button class="filter active">全部</button>
-        <button class="filter">冷藏</button>
-        <button class="filter">小冷冻</button>
-        <button class="filter">大冷冻</button>
-      </div>
+  <div class="filter-row" id="locationFilters">
 
-      <div class="filter-row">
-        <button class="filter">生</button>
-        <button class="filter">熟</button>
-        <button class="filter">已开封</button>
-        <button class="filter">半成品</button>
-      </div>
+    <button
+      class="filter active"
+      data-location="all"
+    >
+      全部
+    </button>
 
-    </section>
+    <button
+      class="filter"
+      data-location="fridge"
+    >
+      冷藏
+    </button>
+
+    <button
+      class="filter"
+      data-location="small-freezer"
+    >
+      小冷冻
+    </button>
+
+    <button
+      class="filter"
+      data-location="large-freezer"
+    >
+      大冷冻
+    </button>
+
+  </div>
+
+
+  <div class="filter-row" id="otherFilters">
+
+    <button
+      class="filter"
+      data-status="raw"
+    >
+      生
+    </button>
+
+    <button
+      class="filter"
+      data-status="cooked"
+    >
+      熟
+    </button>
+
+    <button
+      class="filter"
+      data-tag="opened"
+    >
+      已开封
+    </button>
+
+    <button
+      class="filter"
+      data-tag="semi-prepared"
+    >
+      半成品
+    </button>
+
+  </div>
+
+</section>
 
 
     <section class="food-list" id="foodList">
