@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8">
 
@@ -11,6 +12,7 @@
   <title>我的冰箱</title>
 
   <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
 </head>
 
 <body>
@@ -23,7 +25,7 @@
         <p class="subtitle">看看还有什么能吃</p>
       </div>
 
-      <button class="add-button">
+      <button class="add-button" id="openAddButton">
         ＋ 添加食材
       </button>
     </header>
@@ -34,18 +36,19 @@
         type="search"
         placeholder="搜索食材…"
         class="search-box"
+        id="searchBox"
       >
     </section>
 
 
     <section class="filters">
 
-     <div class="filter-row">
-  <button class="filter active">全部</button>
-  <button class="filter">冷藏</button>
-  <button class="filter">小冷冻</button>
-  <button class="filter">大冷冻</button>
-</div>
+      <div class="filter-row">
+        <button class="filter active">全部</button>
+        <button class="filter">冷藏</button>
+        <button class="filter">小冷冻</button>
+        <button class="filter">大冷冻</button>
+      </div>
 
       <div class="filter-row">
         <button class="filter">生</button>
@@ -57,21 +60,135 @@
     </section>
 
 
-    <section class="food-list">
+    <section class="food-list" id="foodList">
 
-      <div class="empty-state">
+      <div class="empty-state" id="emptyState">
         <div class="empty-icon">🥬</div>
 
         <h2>冰箱还是空的</h2>
 
-        <p>
-          点上面的“添加食材”开始记录
-        </p>
+        <p>点上面的“添加食材”开始记录</p>
       </div>
 
     </section>
 
   </main>
+
+
+  <!-- 添加食材弹窗 -->
+
+  <dialog class="food-dialog" id="foodDialog">
+
+    <form class="food-form" id="foodForm">
+
+      <div class="dialog-header">
+        <h2>添加食材</h2>
+
+        <button
+          type="button"
+          class="close-button"
+          id="closeDialogButton"
+        >
+          ×
+        </button>
+      </div>
+
+
+      <label>
+        食材名称 *
+        <input
+          type="text"
+          id="foodName"
+          required
+          placeholder="例如：鸡胸肉"
+        >
+      </label>
+
+
+      <label>
+        存放位置 *
+
+        <select id="foodLocation" required>
+          <option value="fridge">冷藏</option>
+          <option value="small-freezer">小冷冻</option>
+          <option value="large-freezer">大冷冻</option>
+        </select>
+      </label>
+
+
+      <label>
+        生熟状态 *
+
+        <select id="foodStatus" required>
+          <option value="raw">生</option>
+          <option value="cooked">熟</option>
+        </select>
+      </label>
+
+
+      <div>
+        <div class="field-title">Tag（标签）</div>
+
+        <div class="tag-options">
+
+          <label class="tag-option">
+            <input
+              type="checkbox"
+              value="opened"
+              name="foodTag"
+            >
+            已开封
+          </label>
+
+          <label class="tag-option">
+            <input
+              type="checkbox"
+              value="semi-prepared"
+              name="foodTag"
+            >
+            半成品
+          </label>
+
+        </div>
+      </div>
+
+
+      <label>
+        数量
+        <input
+          type="text"
+          id="foodQuantity"
+          placeholder="例如：500g、半包、2盒"
+        >
+      </label>
+
+
+      <label>
+        放入日期
+        <input
+          type="date"
+          id="foodDate"
+        >
+      </label>
+
+
+      <label>
+        备注
+        <textarea
+          id="foodNote"
+          placeholder="可不填"
+          rows="3"
+        ></textarea>
+      </label>
+
+
+      <button type="submit" class="save-button">
+        保存
+      </button>
+
+    </form>
+
+  </dialog>
 
 </body>
 </html>
