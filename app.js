@@ -10,6 +10,11 @@ const emptyState = document.querySelector("#emptyState");
 const dialogTitle = document.querySelector("#dialogTitle");
 const saveButton = document.querySelector("#saveButton");
 
+const searchBox = document.querySelector("#searchBox");
+
+const locationFilters = document.querySelector("#locationFilters");
+const otherFilters = document.querySelector("#otherFilters");
+
 const foodName = document.querySelector("#foodName");
 const foodLocation = document.querySelector("#foodLocation");
 const foodStatus = document.querySelector("#foodStatus");
@@ -38,11 +43,21 @@ const tagNames = {
 
 
 /*
-  当前正在编辑哪一个食材。
-  null 表示现在不是编辑，而是在添加新食材。
+  当前编辑的食材
 */
 
 let editingId = null;
+
+
+/*
+  当前筛选条件
+*/
+
+let activeLocation = "all";
+
+let activeStatus = null;
+
+let activeTags = new Set();
 
 
 /*
@@ -61,9 +76,13 @@ function loadFoods() {
   }
 
   try {
+
     return JSON.parse(savedFoods);
+
   } catch {
+
     return [];
+
   }
 
 }
@@ -107,7 +126,23 @@ function getToday() {
 
 
 /*
-  打开“添加食材”
+  防止食材名称里的特殊符号
+  被当成网页代码
+*/
+
+function escapeHtml(text) {
+
+  const div = document.createElement("div");
+
+  div.textContent = text ?? "";
+
+  return div.innerHTML;
+
+}
+
+
+/*
+  打开添加食材窗口
 */
 
 openAddButton.addEventListener("click", () => {
@@ -119,6 +154,7 @@ openAddButton.addEventListener("click", () => {
   foodDate.value = getToday();
 
   dialogTitle.textContent = "添加食材";
+
   saveButton.textContent = "保存";
 
   foodDialog.showModal();
@@ -138,7 +174,7 @@ closeDialogButton.addEventListener("click", () => {
 
 
 /*
-  保存
+  保存新食材或修改
 */
 
 foodForm.addEventListener("submit", (event) => {
@@ -156,7 +192,7 @@ foodForm.addEventListener("submit", (event) => {
 
 
   /*
-    添加新食材
+    添加
   */
 
   if (editingId === null) {
@@ -188,7 +224,7 @@ foodForm.addEventListener("submit", (event) => {
 
 
   /*
-    编辑已有食材
+    修改
   */
 
   else {
@@ -231,7 +267,7 @@ foodForm.addEventListener("submit", (event) => {
 
 
 /*
-  编辑食材
+  编辑
 */
 
 function editFood(id) {
@@ -262,10 +298,6 @@ function editFood(id) {
   foodNote.value = food.note || "";
 
 
-  /*
-    先取消所有 Tag（标签）
-  */
-
   document
     .querySelectorAll('input[name="foodTag"]')
     .forEach(input => {
@@ -275,11 +307,7 @@ function editFood(id) {
     });
 
 
-  /*
-    再勾选这个食材已有的 Tag（标签）
-  */
-
-  food.tags.forEach(tag => {
+  (food.tags || []).forEach(tag => {
 
     const input = document.querySelector(
       `input[name="foodTag"][value="${tag}"]`
@@ -296,14 +324,13 @@ function editFood(id) {
 
   saveButton.textContent = "保存修改";
 
-
   foodDialog.showModal();
 
 }
 
 
 /*
-  删除食材
+  删除
 */
 
 function deleteFood(id) {
@@ -341,7 +368,226 @@ function deleteFood(id) {
 
 
 /*
-  把食材显示在首页
+  存放位置筛选
+*/
+
+locationFilters.addEventListener("click", (event) => {
+
+  const button = event.target.closest(
+    "[data-location]"
+  );
+
+
+  if (!button) {
+    return;
+  }
+
+
+  activeLocation = button.dataset.location;
+
+
+  locationFilters
+    .querySelectorAll(".filter")
+    .forEach(filter => {
+
+      filter.classList.remove("active");
+
+    });
+
+
+  button.classList.add("active");
+
+
+  renderFoods();
+
+});
+
+
+/*
+  生熟状态和 Tag（标签）筛选
+*/
+
+otherFilters.addEventListener("click", (event) => {
+
+  const button = event.target.closest(".filter");
+
+
+  if (!button) {
+    return;
+  }
+
+
+  /*
+    生 / 熟
+    两者互斥
+  */
+
+  if (button.dataset.status) {
+
+    const selectedStatus = button.dataset.status;
+
+
+    if (activeStatus === selectedStatus) {
+
+      activeStatus = null;
+
+      button.classList.remove("active");
+
+    }
+
+    else {
+
+      activeStatus = selectedStatus;
+
+
+      otherFilters
+        .querySelectorAll("[data-status]")
+        .forEach(statusButton => {
+
+          statusButton.classList.remove("active");
+
+        });
+
+
+      button.classList.add("active");
+
+    }
+
+  }
+
+
+  /*
+    Tag（标签）
+    可以同时选择多个
+  */
+
+  if (button.dataset.tag) {
+
+    const tag = button.dataset.tag;
+
+
+    if (activeTags.has(tag)) {
+
+      activeTags.delete(tag);
+
+      button.classList.remove("active");
+
+    }
+
+    else {
+
+      activeTags.add(tag);
+
+      button.classList.add("active");
+
+    }
+
+  }
+
+
+  renderFoods();
+
+});
+
+
+/*
+  搜索
+*/
+
+searchBox.addEventListener("input", () => {
+
+  renderFoods();
+
+});
+
+
+/*
+  根据当前条件决定
+  一个食材是否应该显示
+*/
+
+function foodMatchesFilters(food) {
+
+  /*
+    存放位置
+  */
+
+  if (
+    activeLocation !== "all" &&
+    food.location !== activeLocation
+  ) {
+
+    return false;
+
+  }
+
+
+  /*
+    生熟
+  */
+
+  if (
+    activeStatus &&
+    food.status !== activeStatus
+  ) {
+
+    return false;
+
+  }
+
+
+  /*
+    Tag（标签）
+  */
+
+  const foodTags = food.tags || [];
+
+
+  for (const tag of activeTags) {
+
+    if (!foodTags.includes(tag)) {
+
+      return false;
+
+    }
+
+  }
+
+
+  /*
+    搜索文字
+  */
+
+  const searchText = searchBox.value
+    .trim()
+    .toLowerCase();
+
+
+  if (searchText) {
+
+    const searchableText = `
+      ${food.name || ""}
+      ${food.note || ""}
+      ${food.quantity || ""}
+    `.toLowerCase();
+
+
+    if (!searchableText.includes(searchText)) {
+
+      return false;
+
+    }
+
+  }
+
+
+  return true;
+
+}
+
+
+/*
+  显示食材
 */
 
 function renderFoods() {
@@ -349,28 +595,94 @@ function renderFoods() {
   foodList.innerHTML = "";
 
 
+  /*
+    只取符合条件的食材
+  */
+
+  const visibleFoods = foods.filter(
+    foodMatchesFilters
+  );
+
+
+  /*
+    完全没有食材
+  */
+
   if (foods.length === 0) {
 
-    foodList.appendChild(emptyState);
+    foodList.innerHTML = `
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+          🥬
+        </div>
+
+        <h2>
+          冰箱还是空的
+        </h2>
+
+        <p>
+          点上面的“添加食材”开始记录
+        </p>
+
+      </div>
+
+    `;
 
     return;
 
   }
 
 
-  foods.forEach(food => {
+  /*
+    有食材，但当前筛选没有结果
+  */
+
+  if (visibleFoods.length === 0) {
+
+    foodList.innerHTML = `
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+          🔍
+        </div>
+
+        <h2>
+          没找到
+        </h2>
+
+        <p>
+          换个筛选条件或搜索内容试试
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  /*
+    显示符合条件的食材
+  */
+
+  visibleFoods.forEach(food => {
 
     const card = document.createElement("article");
 
     card.className = "food-card";
 
 
-    const tagsHtml = food.tags
+    const tagsHtml = (food.tags || [])
       .map(tag => {
 
         return `
           <span class="food-tag">
-            ${tagNames[tag]}
+            ${tagNames[tag] || tag}
           </span>
         `;
 
@@ -383,11 +695,11 @@ function renderFoods() {
       <div class="food-card-top">
 
         <h3 class="food-name">
-          ${food.name}
+          ${escapeHtml(food.name)}
         </h3>
 
         <div class="food-quantity">
-          ${food.quantity || ""}
+          ${escapeHtml(food.quantity || "")}
         </div>
 
       </div>
@@ -395,15 +707,15 @@ function renderFoods() {
 
       <div class="food-info">
 
-        ${locationNames[food.location]}
+        ${locationNames[food.location] || ""}
 
         ·
 
-        ${statusNames[food.status]}
+        ${statusNames[food.status] || ""}
 
         ${
           food.date
-            ? ` · ${food.date}`
+            ? ` · ${escapeHtml(food.date)}`
             : ""
         }
 
@@ -425,7 +737,7 @@ function renderFoods() {
         food.note
           ? `
             <div class="food-note">
-              ${food.note}
+              ${escapeHtml(food.note)}
             </div>
           `
           : ""
@@ -454,27 +766,22 @@ function renderFoods() {
     `;
 
 
-    const editButton = card.querySelector(
-      ".edit-button"
-    );
+    card
+      .querySelector(".edit-button")
+      .addEventListener("click", () => {
 
-    const deleteButton = card.querySelector(
-      ".delete-button"
-    );
+        editFood(food.id);
 
-
-    editButton.addEventListener("click", () => {
-
-      editFood(food.id);
-
-    });
+      });
 
 
-    deleteButton.addEventListener("click", () => {
+    card
+      .querySelector(".delete-button")
+      .addEventListener("click", () => {
 
-      deleteFood(food.id);
+        deleteFood(food.id);
 
-    });
+      });
 
 
     foodList.appendChild(card);
@@ -485,7 +792,7 @@ function renderFoods() {
 
 
 /*
-  页面打开时显示已有食材
+  页面第一次打开
 */
 
 renderFoods();
