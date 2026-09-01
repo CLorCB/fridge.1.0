@@ -381,3 +381,30 @@ h1 {
   font-weight: 650;
   font-size: 16px;
 }
+/* 食材操作按钮 */
+
+.food-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.edit-button,
+.delete-button {
+  border: none;
+  border-radius: 10px;
+
+  padding: 8px 12px;
+
+  font-size: 13px;
+}
+
+.edit-button {
+  background: #f1f2f4;
+  color: #333;
+}
+
+.delete-button {
+  background: #fff1f1;
+  color: #b42318;
+}
