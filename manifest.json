@@ -1,0 +1,11 @@
+{
+  "name": "我的冰箱",
+  "short_name": "冰箱",
+  "description": "我的个人冰箱食材管理工具",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7f9",
+  "theme_color": "#f6f7f9",
+  "lang": "zh-CN"
+}
