@@ -1,3 +1,26 @@
+/*
+  注册 Service Worker（离线缓存脚本）
+*/
+
+if ("serviceWorker" in navigator) {
+
+  window.addEventListener("load", () => {
+
+    navigator.serviceWorker
+      .register("./service-worker.js")
+
+      .catch(error => {
+
+        console.error(
+          "Service Worker 注册失败：",
+          error
+        );
+
+      });
+
+  });
+
+}
 const openAddButton = document.querySelector("#openAddButton");
 const closeDialogButton = document.querySelector("#closeDialogButton");
 
