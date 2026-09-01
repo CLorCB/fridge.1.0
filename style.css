@@ -408,3 +408,23 @@ h1 {
   background: #fff1f1;
   color: #b42318;
 }
+/* 数据备份 */
+
+.data-tools {
+  display: flex;
+  gap: 8px;
+
+  margin-bottom: 20px;
+}
+
+.data-button {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+
+  padding: 8px 12px;
+
+  background: white;
+  color: #555;
+
+  font-size: 13px;
+}
